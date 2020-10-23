@@ -4,12 +4,9 @@ import { toast } from 'react-toastify'
 
 
 
-export class AddDepartmentModal extends Component {
+export class EditDeptModal extends Component {
     constructor(props) {
-        super(props);
-        this.state = {
-            addModalShow: false,
-        }
+        super(props)
     }
 
 
@@ -18,13 +15,13 @@ export class AddDepartmentModal extends Component {
         // alert(e.target.DepartmentName.value)
         fetch("https://localhost:44305/api/department", {
 
-            method: "POST",
+            method: "PUT",
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                DepartmentID: null,
+                DepartmentID: e.target.DepartmentID.value,
                 DepartmentName: e.target.DepartmentName.value
             })
         })
@@ -36,10 +33,6 @@ export class AddDepartmentModal extends Component {
                     toast.error("Failed to Add")
                 }
             )
-        console.log("data")
-        // this.setState(this.addModalShow = false)
-
-
     }
 
     render() {
@@ -50,9 +43,9 @@ export class AddDepartmentModal extends Component {
                 aria-labelledby="contained-modal-title-vcenter"
                 centered
             >
-                <Modal.Header closeButton>
+                <Modal.Header>
                     <Modal.Title id="contained-modal-title-vcenter">
-                        Add Department
+                        Edit Department
                 </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -61,15 +54,28 @@ export class AddDepartmentModal extends Component {
                             <Col sm={6}>
                                 <Form onSubmit={this.handleSubmit}>
                                     <Form.Group>
+                                        <Form.Label> Department ID</Form.Label>
+                                        <Form.Control
+                                            type="text"
+                                            name="DepartmentID"
+                                            required
+                                            disabled
+                                            defaultValue={this.props.depid}
+                                            placeholder="Department ID"
+                                        />
+                                    </Form.Group>
+                                    <Form.Group>
                                         <Form.Label> Department Name</Form.Label>
                                         <Form.Control
                                             type="text"
                                             name="DepartmentName"
+                                            required
+                                            defaultValue={this.props.depname}
                                             placeholder="Department Name"
                                         />
                                     </Form.Group>
                                     <Form.Group>
-                                        <Button variant="primary" type="submit">Add Department</Button>
+                                        <Button variant="primary" type="submit">Update Department</Button>
                                     </Form.Group>
                                 </Form>
 
@@ -79,11 +85,9 @@ export class AddDepartmentModal extends Component {
 
                 </Modal.Body>
                 <Modal.Footer>
-                    <Button variant="danger" type="submit" onClick={this.props.onHide}>Close</Button>
+                    <Button variant="danger" onClick={this.props.onHide}>Close</Button>
                 </Modal.Footer>
             </Modal>
         )
     }
 }
-
-

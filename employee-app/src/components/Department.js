@@ -3,13 +3,18 @@ import { Table } from 'react-bootstrap';
 import { Button, ButtonToolbar } from 'react-bootstrap';
 import { AddDepartmentModal } from './AddDepartmentModal';
 import { toast } from 'react-toastify'
+import { EditDeptModal } from './EditDeptModal';
+
 
 
 export class Department extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { deps: [], addModalShow: false }
+        this.state = {
+            deps: [], addModalShow: false,
+            editModalShow: false
+        }
     }
     componentDidMount() {
         this.refreshList();
@@ -17,7 +22,7 @@ export class Department extends Component {
 
     componentDidUpdate() {
         this.refreshList();
-    }
+    };
 
     // refreshList() {
     //     this.setState({
@@ -34,23 +39,48 @@ export class Department extends Component {
                 this.setState({ deps: data }
                 )
             })
-    }
+    };
 
 
+    deleteDept(depid) {
+        if (window.confirm("Are you sure you want to delete this File?")) {
+            {
+                fetch('https://localhost:44305/api/department/' + depid, {
+                    method: 'DELETE',
+                    header: {
+                        'Accept': 'application/json',
+                        'Content-Type': 'application/json'
+                    }
+                })
+            }
+
+        }
+    };
 
     render() {
-        const { deps, addModalShow } = this.state;
+        const { deps, depid, depname, addModalShow, editModalShow } = this.state;
         let addModalClose = () =>
             this.setState({ addModalShow: false });
+        let editModalClose = () =>
+            this.setState({ editModalShow: false })
 
 
         return (
             <>
-                <Table className="mt-4" striped bordered hover size="sm">
+                <ButtonToolbar className="float-right mb-2 mt-2">
+                    <Button variant="primary"
+                        onClick={() => this.setState({ addModalShow: true })}>
+                        Add Department
+                    </Button>
+                    <AddDepartmentModal show={addModalShow}
+                        onHide={addModalClose} />
+                </ButtonToolbar>
+                <Table className="mt-4 mb-5" striped bordered hover size="sm">
                     <thead>
                         <tr>
                             <th> Department ID</th>
                             <th>Department Name</th>
+                            <td>Option</td>
                         </tr>
                     </thead>
                     <tbody>
@@ -58,23 +88,33 @@ export class Department extends Component {
                             <tr key={dep.DepartmentID}>
                                 <td> {dep.DepartmentID}</td>
                                 <td> {dep.DepartmentName}</td>
+                                <td>
+                                    <ButtonToolbar>
+                                        <Button className="mr-2 btn-info" onClick={() => this.setState({
+                                            editModalShow: true, depid:
+                                                dep.DepartmentID, depname: dep.DepartmentName
+                                        })}> Edit</Button>
+
+                                        <Button className="mr-2" onClick={() => this.deleteDept(dep.DepartmentID)}
+                                            variant="danger">
+                                            Delete</Button>
+
+                                        <EditDeptModal show={editModalShow}
+                                            onHide={editModalClose}
+                                            depid={depid}
+                                            depname={depname} />
+                                    </ButtonToolbar>
+                                </td>
 
                             </tr>)}
                     </tbody>
                 </Table>
 
-                <ButtonToolbar>
-                    <Button varient="primary"
-                        onClick={() => this.setState({ addModalShow: true })}>
-                        Add Department
-                    </Button>
-                    <AddDepartmentModal show={addModalShow}
-                        onHide={addModalClose} />
-                </ButtonToolbar>
+
 
             </>
         )
     }
-}
+};
 
 export default Department;
